@@ -127,45 +127,20 @@ function main()
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
 
-  local samphttp = require("samphttp")
-  local url = "https://pastebin.com/raw/BbGf0mHg"
-  
-  local function fetchPastebin(callback)
-      samphttp.request(url, function(status, response)
-          if status == 200 then
-              callback(response)
-          else
-              sampAddChatMessage("Failed to fetch access list!", -1)
-              thisScript():unload()
-          end
-      end)
-  end
-  
-  local function hasAccess(data)
-      local playerId = select(2, sampGetPlayerIdByCharHandle(PLAYER_PED))
-      if not playerId then return false end
-  
-      local nick = sampGetPlayerNickname(playerId)
-      for n in data:gmatch("[^\r\n]+") do
-          if nick == n then return true end
+  local url = 'https://pastebin.com/raw/BbGf0mHg'
+  local request = require('requests').get(url)
+  local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
+  local function res()
+      for n in request.text:gmatch('[^\r\n]+') do
+          if nick:find(n) then return true end
       end
       return false
   end
-  
-  -- **Delaying Execution Until Player is Fully Loaded**
-  lua_thread.create(function()
-      while not isSampAvailable() do wait(100) end -- Wait until SA-MP is available
-      while not sampIsLocalPlayerSpawned() do wait(100) end -- Wait until the player is spawned
-  
-      fetchPastebin(function(data)
-          if not hasAccess(data) then
-              sampAddChatMessage("Nav pieejas!", -1)
-              thisScript():unload()
-          else
-              sampAddChatMessage("Ir Pieejas!", -1)
-          end
-      end)
-  end)
+  if not res() then
+      sampAddChatMessage('Nav pieeju!', -1)
+      thisScript():unload()
+  end
+end
 
   autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/version.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
 
