@@ -1,3 +1,6 @@
+script_name("kanmenu")
+script_version("01.02.2025")
+
 require "lib.moonloader"
 local event = require "lib.samp.events"
 local imgui = require "imgui"
@@ -9,6 +12,71 @@ encoding.default = "CP1251"
 --- TODO ---
 --- 
 --- Player Join /capture
+--- Tests
+
+
+-------------------------------------------------------------------------------------------------------------
+
+
+
+--- AUTO UPDATER ---
+
+function autoupdate(json_url, prefix, url)
+  local dlstatus = require('moonloader').download_status
+  local json = getWorkingDirectory() .. '\\'..thisScript().name..'-version.json'
+  if doesFileExist(json) then os.remove(json) end
+  downloadUrlToFile(json_url, json,
+    function(id, status, p1, p2)
+      if status == dlstatus.STATUSEX_ENDDOWNLOAD then
+        if doesFileExist(json) then
+          local f = io.open(json, 'r')
+          if f then
+            local info = decodeJson(f:read('*a'))
+            updatelink = info.updateurl
+            updateversion = info.latest
+            f:close()
+            os.remove(json)
+            if updateversion ~= thisScript().version then
+              lua_thread.create(function(prefix)
+                local dlstatus = require('moonloader').download_status
+                local color = -1
+                sampAddChatMessage((prefix..'Atjauninajums konstatets. Megina atjauninat '..thisScript().version..' на '..updateversion), color)
+                wait(250)
+                downloadUrlToFile(updatelink, thisScript().path,
+                  function(id3, status1, p13, p23)
+                    if status1 == dlstatus.STATUS_DOWNLOADINGDATA then
+                      print(string.format('Augsupieladets %d no %d.', p13, p23))
+                    elseif status1 == dlstatus.STATUS_ENDDOWNLOADDATA then
+                      print('Atjauninasanas lejupielade ir pabeigta.')
+                      sampAddChatMessage((prefix..'Atjauninasana pabeigta!'), color)
+                      goupdatestatus = true
+                      lua_thread.create(function() wait(500) thisScript():reload() end)
+                    end
+                    if status1 == dlstatus.STATUSEX_ENDDOWNLOAD then
+                      if goupdatestatus == nil then
+                        sampAddChatMessage((prefix..'Atjauninasana bija neveiksmiga. Tiek izmantota pedeja versija..'), color)
+                        update = false
+                      end
+                    end
+                  end
+                )
+                end, prefix
+              )
+            else
+              update = false
+              print('v'..thisScript().version..': Nav nepieciesams atjauninajums.')
+            end
+          end
+        else
+          print('v'..thisScript().version..': Es nevaru parbaudit, vai nav atjauninajumu. Pienemiet to vai parbaudiet pats '..url)
+          update = false
+        end
+      end
+    end
+  )
+  while update ~= false do wait(100) end
+end
+
 
 
 -------------------------------------------------------------------------------------------------------------
@@ -65,6 +133,8 @@ function main()
   sampRegisterChatCommand("sm", function() sampSendChat("/setmaterials") end)
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
+
+  autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/update.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
 
   while true do
     wait(0)
