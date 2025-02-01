@@ -13,7 +13,7 @@ encoding.default = "CP1251"
 --- 
 --- Player Join /capture
 --- 
---- KANELIS LABAKAIS
+--- KANELIS LABAKAIS #KANELIS
 
 
 -------------------------------------------------------------------------------------------------------------
@@ -135,7 +135,7 @@ function main()
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
 
-  autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/update.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
+  autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/version.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
 
   while true do
     wait(0)
