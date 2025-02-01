@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.2 Test / 01.02.2025")
+script_version("0.3 Test / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
