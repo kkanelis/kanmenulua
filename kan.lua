@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.1.2 gang / 02.01.2025")
+script_version("0.6.2 drugs / 02.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -315,7 +315,7 @@ function drugs()
       if isKeyJustPressed(VK_X) then
         lua_thread.create(function()
           sampSendChat("/usedrugs 20")
-          wait(150)
+          wait(300)
           clearCharTasksImmediately(PLAYER_PED)
       end)
     end
