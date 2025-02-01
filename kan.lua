@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.5.2 Protection / 01.02.2025")
+script_version("0.5.3 Protection / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -114,7 +114,7 @@ local url = 'https://pastebin.com/raw/BbGf0mHg'
 local samphttp = require('samphttp')
 local samp = require('sampfuncs')
 
-function checkAccess()
+local function checkAccess()
     samphttp.fetch(url, function(response)
         if response.status_code == 200 then
             local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
