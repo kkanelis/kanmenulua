@@ -109,29 +109,6 @@ function save()
   inicfg.save(cfg, 'kan.ini')
 end
 
-
-local url = 'https://pastebin.com/raw/BbGf0mHg'
-local samphttp = require('samphttp')
-local samp = require('sampfuncs')
-
-local function checkAccess()
-    samphttp.fetch(url, function(response)
-        if response.status_code == 200 then
-            local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
-            for line in response.body:gmatch("[^\r\n]+") do
-                if line == nick then
-                    sampAddChatMessage('Ir Pieejas!', -1)
-                    return
-                end
-            end
-            sampAddChatMessage('Nav pieejas!', -1)
-            thisScript():unload()
-        else
-            sampAddChatMessage('Neizdevās pārbaudīt pieeju!', -1)
-        end
-    end)
-end
-
 -------------------------------------------------------------------------------------------------------------
 
 
@@ -149,6 +126,46 @@ function main()
   sampRegisterChatCommand("sm", function() sampSendChat("/setmaterials") end)
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
+
+  local samphttp = require("samphttp")
+  local url = "https://pastebin.com/raw/BbGf0mHg"
+  
+  local function fetchPastebin(callback)
+      samphttp.request(url, function(status, response)
+          if status == 200 then
+              callback(response)
+          else
+              sampAddChatMessage("Failed to fetch access list!", -1)
+              thisScript():unload()
+          end
+      end)
+  end
+  
+  local function hasAccess(data)
+      local playerId = select(2, sampGetPlayerIdByCharHandle(PLAYER_PED))
+      if not playerId then return false end
+  
+      local nick = sampGetPlayerNickname(playerId)
+      for n in data:gmatch("[^\r\n]+") do
+          if nick == n then return true end
+      end
+      return false
+  end
+  
+  -- **Delaying Execution Until Player is Fully Loaded**
+  lua_thread.create(function()
+      while not isSampAvailable() do wait(100) end -- Wait until SA-MP is available
+      while not sampIsLocalPlayerSpawned() do wait(100) end -- Wait until the player is spawned
+  
+      fetchPastebin(function(data)
+          if not hasAccess(data) then
+              sampAddChatMessage("Nav pieejas!", -1)
+              thisScript():unload()
+          else
+              sampAddChatMessage("Ir Pieejas!", -1)
+          end
+      end)
+  end)
 
   autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/version.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
 
