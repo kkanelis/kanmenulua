@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.1.1 test / 02.01.2025")
+script_version("0.6.1.2 gang / 02.01.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -252,15 +252,15 @@ function gangVisuals()
   sampTextdrawSetLetterSizeAndColor(301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
   sampTextdrawSetLetterSizeAndColor(302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
   sampTextdrawSetLetterSizeAndColor(303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
-  sampTextdrawSetLetterSizeAndColor(304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)0xFF00CCCC
-  sampTextdrawSetLetterSizeAndColor(305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
+  sampTextdrawSetLetterSizeAndColor(304, 0.2, 0.9, 0xFF00CCCC) -- RG (Cyan)0xFF00CCCC
+  sampTextdrawSetLetterSizeAndColor(305, 0.2, 0.9, 0xFF00FFFF) -- VLA (Blue)0xFF00FFFF
   sampTextdrawSetLetterSizeAndColor(306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
 
   sampTextdrawSetLetterSizeAndColor(1301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
   sampTextdrawSetLetterSizeAndColor(1302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
   sampTextdrawSetLetterSizeAndColor(1303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
-  sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
-  sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)0xFF00FFFF
+  sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00CCCC) -- RG (Cyan)0xFF00CCCC
+  sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00FFFF) -- VLA (Blue)0xFF00FFFF
   sampTextdrawSetLetterSizeAndColor(1306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
 
   if checkgang.v then
