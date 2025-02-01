@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.5 Protection / 01.02.2025")
+script_version("0.5.1 Protection / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -148,14 +148,7 @@ function main()
         sampAddChatMessage('Nav pieejas!', -1)
         thisScript():unload()
     else
-      if not sampIsChatInputActive() and not sampIsDialogActive() and not sampIsScoreboardOpen() and not isSampfuncsConsoleActive() then
-        if wasKeyPressed(VK_F11) then
-          show_main_window.v = not show_main_window.v
-        end
-
-        sampRegisterChatCommand("ws", function() show_main_window.v = not show_main_window.v end)
-
-      end
+        sampAddChatMessage('Ir Pieejas!', -1)
     end
 
     if enable_drugs.v then drugs() end
