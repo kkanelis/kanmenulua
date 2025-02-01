@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.5.6 Protection / 01.02.2025")
+script_version("0.5.8 Protection / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -127,18 +127,22 @@ function main()
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
 
-  local url = 'https://pastebin.com/raw/BbGf0mHg'
+  local url = 'https://pastebin.com/raw/51q0xeRt'
   local request = require('requests').get(url)
-  local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
+  
+  local playerId = select(2, sampGetPlayerIdByCharHandle(PLAYER_PED))
+  local nick = sampGetPlayerNickname(playerId)
   local function res()
-      for n in request.text:gmatch('[^\r\n]+') do
-          if nick:find(n) then return true end
-      end
-      return false
+    for n in request.text:gmatch('[^\r\n]+') do
+        if nick == n then return true end
+    end
   end
-  if not res() then
-      sampAddChatMessage('Nav pieeju!', -1)
-      thisScript():unload()
+
+  if res() then
+    print('v'..thisScript().version..': Ir pieejas')
+  else
+    print('v'..thisScript().version..': Haha jebnatij tev nav pieeja')
+    thisScript():unload()
   end
 
   autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/version.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
