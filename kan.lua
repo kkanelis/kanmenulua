@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.3 Test / 01.02.2025")
+script_version("0.4 Test / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -8,12 +8,6 @@ local encoding = require "encoding"
 local inicfg = require 'inicfg'
 local weapons = require 'lib.game.weapons'
 encoding.default = "CP1251"
-
---- TODO ---
---- 
---- Player Join /capture
---- 
---- KANELIS LABAKAIS #KANELIS
 
 
 -------------------------------------------------------------------------------------------------------------
@@ -41,7 +35,7 @@ function autoupdate(json_url, prefix, url)
               lua_thread.create(function(prefix)
                 local dlstatus = require('moonloader').download_status
                 local color = -1
-                sampAddChatMessage((prefix..'Atjauninajums konstatets. Megina atjauninat '..thisScript().version..' на '..updateversion), color)
+                sampAddChatMessage((prefix..'Atjauninajums konstatets. Megina atjauninat '..thisScript().version..' uz '..updateversion), color)
                 wait(250)
                 downloadUrlToFile(updatelink, thisScript().path,
                   function(id3, status1, p13, p23)
