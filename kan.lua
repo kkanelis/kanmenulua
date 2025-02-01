@@ -315,7 +315,7 @@ function drugs()
       if isKeyJustPressed(VK_X) then
         lua_thread.create(function()
           sampSendChat("/usedrugs 20")
-          wait(150)
+          wait(300)
           clearCharTasksImmediately(PLAYER_PED)
       end)
     end
