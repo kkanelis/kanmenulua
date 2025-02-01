@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.5.1 Protection / 01.02.2025")
+script_version("0.5.2 Protection / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -110,6 +110,27 @@ function save()
 end
 
 
+local url = 'https://pastebin.com/raw/BbGf0mHg'
+local samphttp = require('samphttp')
+local samp = require('sampfuncs')
+
+function checkAccess()
+    samphttp.fetch(url, function(response)
+        if response.status_code == 200 then
+            local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
+            for line in response.body:gmatch("[^\r\n]+") do
+                if line == nick then
+                    sampAddChatMessage('Ir Pieejas!', -1)
+                    return
+                end
+            end
+            sampAddChatMessage('Nav pieejas!', -1)
+            thisScript():unload()
+        else
+            sampAddChatMessage('Neizdevās pārbaudīt pieeju!', -1)
+        end
+    end)
+end
 
 -------------------------------------------------------------------------------------------------------------
 
@@ -131,25 +152,11 @@ function main()
 
   autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/version.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
 
+  checkAccess()
+
   while true do
     wait(0)
     imgui.Process = show_main_window.v
-
-    local url = 'https://pastebin.com/raw/BbGf0mHg'
-    local request = require('requests').get(url)
-    local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
-    local function res()
-        for n in request.text:gmatch('[^\r\n]+') do
-            if nick:find(n) then return true end
-        end
-        return false
-    end
-    if not res() then
-        sampAddChatMessage('Nav pieejas!', -1)
-        thisScript():unload()
-    else
-        sampAddChatMessage('Ir Pieejas!', -1)
-    end
 
     if enable_drugs.v then drugs() end
     if enable_sprinthook.v then sprinthook() end
