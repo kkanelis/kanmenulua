@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6 Gang Checker / 01.02.2025")
+script_version("0.6.1 Drugs&gang / 02.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -252,15 +252,15 @@ function gangVisuals()
   sampTextdrawSetLetterSizeAndColor(301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
   sampTextdrawSetLetterSizeAndColor(302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
   sampTextdrawSetLetterSizeAndColor(303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
-  sampTextdrawSetLetterSizeAndColor(304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
-  sampTextdrawSetLetterSizeAndColor(305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
+  sampTextdrawSetLetterSizeAndColor(304, 0.2, 0.9, 0xFF00CCCC) -- RG (Cyan)
+  sampTextdrawSetLetterSizeAndColor(305, 0.2, 0.9, 0xFF00FFFF) -- VLA (Blue)
   sampTextdrawSetLetterSizeAndColor(306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
 
   sampTextdrawSetLetterSizeAndColor(1301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
   sampTextdrawSetLetterSizeAndColor(1302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
   sampTextdrawSetLetterSizeAndColor(1303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
-  sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
-  sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
+  sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00CCCC) -- RG (Cyan)
+  sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00FFFF) -- VLA (Blue)
   sampTextdrawSetLetterSizeAndColor(1306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
 
   if checkgang.v then
@@ -315,7 +315,7 @@ function drugs()
       if isKeyJustPressed(VK_X) then
         lua_thread.create(function()
           sampSendChat("/usedrugs 20")
-          wait(150)
+          wait(300)
           clearCharTasksImmediately(PLAYER_PED)
       end)
     end
