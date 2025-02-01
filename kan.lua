@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.5.8 Protection / 01.02.2025")
+script_version("0.6 Gang Checker / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -154,93 +154,8 @@ function main()
     if enable_drugs.v then drugs() end
     if enable_sprinthook.v then sprinthook() end
     if sbiv.v then sbivs() end
-
-    if checkgang.v then
-      lua_thread.create(function()
-          sampTextdrawCreate(301, "GSG:", 5.0, 360)
-          sampTextdrawCreate(302, "BG:", 5.0, 370)
-          sampTextdrawCreate(303, "VG:", 5.0, 380)
-          sampTextdrawCreate(304, "RG:", 5.0, 390)
-          sampTextdrawCreate(305, "VLA:", 5.0, 400)
-          sampTextdrawCreate(306, "LSG:", 5.0, 410)
-
-          sampTextdrawCreate(1301, "0", 20.0, 360)
-          sampTextdrawCreate(1302, "0", 20.0, 370)
-          sampTextdrawCreate(1303, "0", 20.0, 380)
-          sampTextdrawCreate(1304, "0", 20.0, 390)
-          sampTextdrawCreate(1305, "0", 20.0, 400)
-          sampTextdrawCreate(1306, "0", 20.0, 410)
-    
-          for i = 301, 306 do
-              sampTextdrawSetStyle(i, 1)
-              sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
-          end
-
-          for i = 1301, 1306 do
-            sampTextdrawSetStyle(i, 1)
-            sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
-        end
-          
-          sampTextdrawSetLetterSizeAndColor(301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
-          sampTextdrawSetLetterSizeAndColor(302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
-          sampTextdrawSetLetterSizeAndColor(303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
-          sampTextdrawSetLetterSizeAndColor(304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
-          sampTextdrawSetLetterSizeAndColor(305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
-          sampTextdrawSetLetterSizeAndColor(306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
-
-          sampTextdrawSetLetterSizeAndColor(1301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
-          sampTextdrawSetLetterSizeAndColor(1302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
-          sampTextdrawSetLetterSizeAndColor(1303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
-          sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
-          sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
-          sampTextdrawSetLetterSizeAndColor(1306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
-
-          onlsg, ongsg, onbg, onvg, onrg, onvla = 0, 0, 0, 0, 0, 0
-          reslt, mansid = sampGetPlayerIdByCharHandle(playerPed)
-          
-          local playerColor = sampGetPlayerColor(mansid)
-          if sampGetPlayerColor(mansid) == 4294860800 then onlsg = onlsg + 1 end
-          if sampGetPlayerColor(mansid) == 0xC800D900 then ongsg = ongsg + 1 end
-          if sampGetPlayerColor(mansid) == 0xC8D900D3 then onbg = onbg + 1 end
-          if sampGetPlayerColor(mansid) == 0xC8FFC801 then onvg = onvg + 1 end
-          if sampGetPlayerColor(mansid) == 0xAA83BFBF then onrg = onrg + 1 end
-          if sampGetPlayerColor(mansid) == 0xC801FCFF then onvla = onvla + 1 end
-          
-          for i = 1, 140 do
-            if sampIsPlayerConnected(i) then
-              if sampGetPlayerColor(i) == 4294860800 then onlsg = onlsg + 1 end
-              if sampGetPlayerColor(i) == 0xC800D900 then ongsg = ongsg + 1	end
-              if sampGetPlayerColor(i) == 0xC8D900D3 then onbg = onbg + 1	end
-              if sampGetPlayerColor(i) == 0xC8FFC801 then onvg = onvg + 1	end
-              if sampGetPlayerColor(i) == 0xAA83BFBF then onrg = onrg + 1 end
-              if sampGetPlayerColor(i) == 0xC801FCFF then onvla = onvla + 1	end
-            end
-          end
-          
-          while checkgang.v do
-    
-            sampTextdrawSetString(301, "GSG:")
-            sampTextdrawSetString(302, "BG:")
-            sampTextdrawSetString(303, "VG:")
-            sampTextdrawSetString(304, "RG:")
-            sampTextdrawSetString(305, "VLA:")
-            sampTextdrawSetString(306, "LSG:")	
-
-            sampTextdrawSetString(1301, ongsg)
-            sampTextdrawSetString(1302, onbg)
-            sampTextdrawSetString(1303, onvg)
-            sampTextdrawSetString(1304, onrg)
-            sampTextdrawSetString(1305, onvla)
-            sampTextdrawSetString(1306, onlsg)	
-
-            wait(1000)
-  
-          end
-        end)
-      end
-
-    
-    end
+    if checkgang.v then gangVisuals() end
+  end
 end
 
 
@@ -256,7 +171,7 @@ function event.onSendPlayerSync(data)
   if cbunnyhop then
  	  if bit.band(data.keysData, 0x28) == 0x28 then
  		  data.keysData = bit.bxor(data.keysData, 0x20)
- 	end
+ 	  end
   end
 end
 
@@ -270,8 +185,102 @@ end
 
 
 
-function checkgangs()
-  if not checkgang.v then
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+-- Gang Checker --
+
+function event.onPlayerJoin(playerId)
+  updateGangCounts()
+end
+
+function updateGangCounts()
+  onlsg, ongsg, onbg, onvg, onrg, onvla = 0, 0, 0, 0, 0, 0
+  
+  reslt, mansid = sampGetPlayerIdByCharHandle(playerPed)
+  if reslt then
+      local playerColor = sampGetPlayerColor(mansid)
+      if playerColor == 4294860800 then onlsg = onlsg + 1 end
+      if playerColor == 0xC800D900 then ongsg = ongsg + 1 end
+      if playerColor == 0xC8D900D3 then onbg = onbg + 1 end
+      if playerColor == 0xC8FFC801 then onvg = onvg + 1 end
+      if playerColor == 0xAA83BFBF then onrg = onrg + 1 end
+      if playerColor == 0xC801FCFF then onvla = onvla + 1 end
+  end
+
+  for i = 0, 140 do
+      if sampIsPlayerConnected(i) then
+          local playerColor = sampGetPlayerColor(i)
+          if playerColor == 4294860800 then onlsg = onlsg + 1 end
+          if playerColor == 0xC800D900 then ongsg = ongsg + 1 end
+          if playerColor == 0xC8D900D3 then onbg = onbg + 1 end
+          if playerColor == 0xC8FFC801 then onvg = onvg + 1 end
+          if playerColor == 0xAA83BFBF then onrg = onrg + 1 end
+          if playerColor == 0xC801FCFF then onvla = onvla + 1 end
+      end
+  end
+end
+
+
+function gangVisuals()
+
+  sampTextdrawCreate(301, "GSG:", 5.0, 360)
+  sampTextdrawCreate(302, "BG:", 5.0, 370)
+  sampTextdrawCreate(303, "VG:", 5.0, 380)
+  sampTextdrawCreate(304, "RG:", 5.0, 390)
+  sampTextdrawCreate(305, "VLA:", 5.0, 400)
+  sampTextdrawCreate(306, "LSG:", 5.0, 410)
+
+  sampTextdrawCreate(1301, "0", 20.0, 360)
+  sampTextdrawCreate(1302, "0", 20.0, 370)
+  sampTextdrawCreate(1303, "0", 20.0, 380)
+  sampTextdrawCreate(1304, "0", 20.0, 390)
+  sampTextdrawCreate(1305, "0", 20.0, 400)
+  sampTextdrawCreate(1306, "0", 20.0, 410)
+
+  for i = 301, 306 do
+      sampTextdrawSetStyle(i, 1)
+      sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
+  end
+
+  for i = 1301, 1306 do
+    sampTextdrawSetStyle(i, 1)
+    sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
+  end
+  
+  sampTextdrawSetLetterSizeAndColor(301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
+  sampTextdrawSetLetterSizeAndColor(302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
+  sampTextdrawSetLetterSizeAndColor(303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
+  sampTextdrawSetLetterSizeAndColor(304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
+  sampTextdrawSetLetterSizeAndColor(305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
+  sampTextdrawSetLetterSizeAndColor(306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
+
+  sampTextdrawSetLetterSizeAndColor(1301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
+  sampTextdrawSetLetterSizeAndColor(1302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
+  sampTextdrawSetLetterSizeAndColor(1303, 0.2, 0.9, 0xFFFFFF00) -- VG (Yellow)
+  sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00FFFF) -- RG (Cyan)
+  sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00CCCC) -- VLA (Blue)
+  sampTextdrawSetLetterSizeAndColor(1306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
+
+  if checkgang.v then
+
+    sampTextdrawSetString(301, "GSG:")
+    sampTextdrawSetString(302, "BG:")
+    sampTextdrawSetString(303, "VG:")
+    sampTextdrawSetString(304, "RG:")
+    sampTextdrawSetString(305, "VLA:")
+    sampTextdrawSetString(306, "LSG:")	
+
+    sampTextdrawSetString(1301, ongsg)
+    sampTextdrawSetString(1302, onbg)
+    sampTextdrawSetString(1303, onvg)
+    sampTextdrawSetString(1304, onrg)
+    sampTextdrawSetString(1305, onvla)
+    sampTextdrawSetString(1306, onlsg)
+
+  else
+
     sampTextdrawDelete(301)
     sampTextdrawDelete(302)
     sampTextdrawDelete(303)
@@ -284,13 +293,11 @@ function checkgangs()
     sampTextdrawDelete(1304)
     sampTextdrawDelete(1305)
     sampTextdrawDelete(1306)
+
   end
 end
 
-function updateGangCounts()
-  if not checkgang.v then return end
-
-end
+-------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -699,7 +706,7 @@ function imgui.OnDrawFrame()
       cfg.config.gang = checkgang.v
 
       if not checkgang.v then
-        checkgangs()
+        gangVisuals()
       end
 
       save()
