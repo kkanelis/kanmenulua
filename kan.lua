@@ -140,11 +140,8 @@ function main()
       sampAddChatMessage('Nav pieeju!', -1)
       thisScript():unload()
   end
-end
 
   autoupdate("https://raw.githubusercontent.com/kkanelis/kanmenulua/refs/heads/main/version.json", '['..string.upper(thisScript().name)..']: ', "https://github.com/kkanelis/kanmenulua")
-
-  checkAccess()
 
   while true do
     wait(0)
