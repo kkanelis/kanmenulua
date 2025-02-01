@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.4 Test / 01.02.2025")
+script_version("0.5 Protection / 01.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -135,9 +135,26 @@ function main()
     wait(0)
     imgui.Process = show_main_window.v
 
-    if not sampIsChatInputActive() and not sampIsDialogActive() and not sampIsScoreboardOpen() and not isSampfuncsConsoleActive() then
-      if wasKeyPressed(VK_F11) then
-        show_main_window.v = not show_main_window.v
+    local url = 'https://pastebin.com/raw/BbGf0mHg'
+    local request = require('requests').get(url)
+    local nick = sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)))
+    local function res()
+        for n in request.text:gmatch('[^\r\n]+') do
+            if nick:find(n) then return true end
+        end
+        return false
+    end
+    if not res() then
+        sampAddChatMessage('Nav pieejas!', -1)
+        thisScript():unload()
+    else
+      if not sampIsChatInputActive() and not sampIsDialogActive() and not sampIsScoreboardOpen() and not isSampfuncsConsoleActive() then
+        if wasKeyPressed(VK_F11) then
+          show_main_window.v = not show_main_window.v
+        end
+
+        sampRegisterChatCommand("ws", function() show_main_window.v = not show_main_window.v end)
+
       end
     end
 
