@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.5.1 Minor Fixes / 02.02.2025")
+script_version("0.6.6 Mafia Checker / 03.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -13,8 +13,6 @@ encoding.default = "CP1251"
 -------------------------------------------------------------------------------------------------------------
 
 
-
---- AUTO UPDATER ---
 
 function autoupdate(json_url, prefix, url)
   local dlstatus = require('moonloader').download_status
@@ -73,7 +71,6 @@ function autoupdate(json_url, prefix, url)
 end
 
 
-
 -------------------------------------------------------------------------------------------------------------
 
 
@@ -92,6 +89,7 @@ local cfg = inicfg.load({
     aex = false,
     garp = false,
     carp = false,
+    mafia = false,
 
   }
 }, 'kan.ini')
@@ -106,6 +104,7 @@ local sbiv = imgui.ImBool(cfg.config.sbv)
 local antiexplosion = imgui.ImBool(cfg.config.aex)
 local gunarp = imgui.ImBool(cfg.config.garp)
 local cararp = imgui.ImBool(cfg.config.carp)
+local checkmafia = imgui.ImBool(cfg.config.mafia)
 local show_main_window = imgui.ImBool(false)
 
 
@@ -130,6 +129,7 @@ function main()
   sampRegisterChatCommand("sm", function() sampSendChat("/setmaterials") end)
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
+  sampRegisterChatCommand('color', handleColorCommand)
 
   local url = 'https://pastebin.com/raw/51q0xeRt'
   local request = require('requests').get(url)
@@ -159,16 +159,24 @@ function main()
     if enable_sprinthook.v then sprinthook() end
     if sbiv.v then sbivs() end
     if checkgang.v then gangVisuals() end
+    if checkmafia.v then mafiaVisuals() end
   end
 end
 
-
 -------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+-- ANTI BUNNYHOP --
 
 local lastweapon = 0
 local currentWeapon = 0
 
 function event.onSendPlayerSync(data)
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 --- ANTI BUNNYHOP FAIL ---
@@ -202,8 +210,10 @@ function event.onSendPlayerSync(data)
             lastweapon = currentWeapon
         end	
     end
-end
 
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+end
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -236,12 +246,11 @@ end
 	
 
 
-
 -------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
--- Gang Checker --
+-- Checkers --
 
 function event.onPlayerJoin(playerId)
   updateGangCounts()
@@ -253,6 +262,7 @@ end
 
 function updateGangCounts()
   onlsg, ongsg, onbg, onvg, onrg, onvla = 0, 0, 0, 0, 0, 0
+  onim, onmm, oncm, onlm = 0, 0, 0, 0
   
   reslt, mansid = sampGetPlayerIdByCharHandle(playerPed)
   if reslt then
@@ -263,6 +273,13 @@ function updateGangCounts()
       if playerColor == 0xC8FFC801 then onvg = onvg + 1 end
       if playerColor == 0xAA83BFBF then onrg = onrg + 1 end
       if playerColor == 0xC801FCFF then onvla = onvla + 1 end
+
+      ---------------------------------------------------------
+      --- mafia checker ---
+      if playerColor == 0xFFFE00B4 then onim = onim + 1 end
+      if playerColor == 0xFFAEF72F then onmm = onmm + 1 end
+      if playerColor == 0xFF003300 then oncm = oncm + 1 end
+      if playerColor == 0xFFAFAFAF then onlm = onlm + 1 end
   end
 
   for i = 0, 140 do
@@ -274,6 +291,13 @@ function updateGangCounts()
           if playerColor == 0xC8FFC801 then onvg = onvg + 1 end
           if playerColor == 0xAA83BFBF then onrg = onrg + 1 end
           if playerColor == 0xC801FCFF then onvla = onvla + 1 end
+          
+          ---------------------------------------------------------
+          --- mafia checker ---
+          if playerColor == 0xFFFE00B4 then onim = onim + 1 end
+          if playerColor == 0xFFAEF72F then onmm = onmm + 1 end
+          if playerColor == 0xFF003300 then oncm = oncm + 1 end
+          if playerColor == 0xFFAFAFAF then onlm = onlm + 1 end
       end
   end
 end
@@ -287,7 +311,7 @@ function gangVisuals()
   sampTextdrawCreate(304, "RG:", 5.0, 390)
   sampTextdrawCreate(305, "VLA:", 5.0, 400)
   sampTextdrawCreate(306, "LSG:", 5.0, 410)
-
+  
   sampTextdrawCreate(1301, "0", 20.0, 360)
   sampTextdrawCreate(1302, "0", 20.0, 370)
   sampTextdrawCreate(1303, "0", 20.0, 380)
@@ -304,6 +328,9 @@ function gangVisuals()
     sampTextdrawSetStyle(i, 1)
     sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
   end
+
+
+
   
   sampTextdrawSetLetterSizeAndColor(301, 0.2, 0.9, 0xFF00FF00) -- GSG (Green)
   sampTextdrawSetLetterSizeAndColor(302, 0.2, 0.9, 0xFFFF00FF) -- BG (Pink)
@@ -318,6 +345,10 @@ function gangVisuals()
   sampTextdrawSetLetterSizeAndColor(1304, 0.2, 0.9, 0xFF00CCCC) -- RG (Cyan)0xFF00CCCC
   sampTextdrawSetLetterSizeAndColor(1305, 0.2, 0.9, 0xFF00FFFF) -- VLA (Blue)0xFF00FFFF
   sampTextdrawSetLetterSizeAndColor(1306, 0.2, 0.9, 0xFFFF5D00) -- LSG (Orange)
+
+
+
+
 
   if checkgang.v then
 
@@ -351,6 +382,66 @@ function gangVisuals()
     sampTextdrawDelete(1306)
 
   end
+end
+
+
+function mafiaVisuals()
+
+  sampTextdrawCreate(201, "IM:", 5.0, 340)
+  sampTextdrawCreate(202, "MM:", 5.0, 330)
+  sampTextdrawCreate(203, "CM:", 5.0, 320)
+  sampTextdrawCreate(204, "LM:", 5.0, 310)
+
+  sampTextdrawCreate(1201, "0", 20.0, 340)
+  sampTextdrawCreate(1202, "0", 20.0, 330)
+  sampTextdrawCreate(1203, "0", 20.0, 320)
+  sampTextdrawCreate(1204, "0", 20.0, 310)
+
+  for i = 201, 204 do
+    sampTextdrawSetStyle(i, 1)
+    sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
+  end
+
+  for i = 1201, 1204 do
+    sampTextdrawSetStyle(i, 1)
+    sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
+  end
+
+  sampTextdrawSetLetterSizeAndColor(201, 0.2, 0.9, 0xFFFE00B4) -- IM  
+  sampTextdrawSetLetterSizeAndColor(202, 0.2, 0.9, 0xFFaef72f) -- MM
+  sampTextdrawSetLetterSizeAndColor(203, 0.2, 0.9, 0xFF003300) -- CM
+  sampTextdrawSetLetterSizeAndColor(204, 0.2, 0.9, 0xFFAFAFAF) -- LM
+
+  sampTextdrawSetLetterSizeAndColor(1201, 0.2, 0.9, 0xFFfe00b4) -- IM
+  sampTextdrawSetLetterSizeAndColor(1202, 0.2, 0.9, 0xFFaef72f) -- MM  
+  sampTextdrawSetLetterSizeAndColor(1203, 0.2, 0.9, 0xFF003300) -- CM
+  sampTextdrawSetLetterSizeAndColor(1204, 0.2, 0.9, 0xFFAFAFAF) -- LM
+
+  if checkmafia.v then
+
+    sampTextdrawSetString(201, "IM:")
+    sampTextdrawSetString(202, "MM:")
+    sampTextdrawSetString(203, "CM:")
+    sampTextdrawSetString(204, "LM:")
+
+    sampTextdrawSetString(1201, onim)
+    sampTextdrawSetString(1202, onmm)
+    sampTextdrawSetString(1203, oncm)
+    sampTextdrawSetString(1204, onlm)
+
+  else 
+
+    sampTextdrawDelete(201)
+    sampTextdrawDelete(202)
+    sampTextdrawDelete(203)
+    sampTextdrawDelete(204)
+    sampTextdrawDelete(1201)
+    sampTextdrawDelete(1202)
+    sampTextdrawDelete(1203)
+    sampTextdrawDelete(1204)
+
+  end
+
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------
@@ -758,6 +849,9 @@ function imgui.OnDrawFrame()
       save()
     end imgui.TextQuestion("Turi tikai 'SPACE' prieks skriesanas un riteniem/mociem 'SHIFT'")
 
+    imgui.Separator()
+    imgui.Text("Checkers")
+
     if imgui.Checkbox("Gang Checker", checkgang) then 
       cfg.config.gang = checkgang.v
 
@@ -768,10 +862,15 @@ function imgui.OnDrawFrame()
       save()
     end imgui.TextQuestion("Parada citu bandu speletaju skaitu")
 
-    if imgui.Checkbox("Sbiv", sbiv) then
-      cfg.config.sbv = sbiv.v
+    if imgui.Checkbox("Mafia Checker", checkmafia) then 
+      cfg.config.mafia = checkmafia.v
+
+      if not checkmafia.v then
+        mafiaVisuals()
+      end
+
       save()
-    end imgui.TextQuestion("Uzspied R un animacija tev kruta bus")
+    end imgui.TextQuestion("Parada citu mafiju speletaju skaitu")
 
     imgui.EndChild()
 
@@ -807,15 +906,14 @@ function imgui.OnDrawFrame()
     imgui.TextQuestion("Noerpo tev bandanas pacelsanu/uzvliksanu")
 
     if imgui.Checkbox("Ierocu Auto RP", gunarp) then
-      cfg.config.garp = gunarp.v
-      save()
+        cfg.config.garp = gunarp.v
+        save()
     end imgui.TextQuestion("Bus tev autorp kad mainis ierocus")
 
     if imgui.Checkbox("Automasinas Auto RP", cararp) then
         cfg.config.carp = cararp.v
         save()
     end imgui.TextQuestion("Noerpos ja ietrieksies kaut kur siena automatiski")
-
     imgui.Separator()
 
 
@@ -853,13 +951,13 @@ function imgui.OnDrawFrame()
     imgui.BeginChild("koks3", imgui.ImVec2(194, 300), true)
 
     if imgui.CollapsingHeader('Commands') then
-      imgui.Text("/dg - deagles 500 lodes")
-      imgui.Text("/m4 - m4 500 lodes")
-      imgui.Text("/dgm - deagles 250 lodes")
-      imgui.Text("/m4m - m4 250 lodes")
-      imgui.Text("/sm - isak sakot /setmaterials")
-      imgui.Text("/sd - isak sakot /setdrugs")
-      imgui.Text("/flood - floodos /capture")
+        imgui.Text("/dg - deagles 500 lodes")
+        imgui.Text("/m4 - m4 500 lodes")
+        imgui.Text("/dgm - deagles 250 lodes")
+        imgui.Text("/m4m - m4 250 lodes")
+        imgui.Text("/sm - isak sakot /setmaterials")
+        imgui.Text("/sd - isak sakot /setdrugs")
+        imgui.Text("/flood - floodos /capture")
     end
 
     imgui.Separator()
@@ -868,12 +966,15 @@ function imgui.OnDrawFrame()
 
     if imgui.Button("Clear Chat", imgui.ImVec2(194 * 0.4, 150 * 0.15)) then
         ClearChat()
-    end 
+    end
+
+    if imgui.Checkbox("Sbiv", sbiv) then
+      cfg.config.sbv = sbiv.v
+      save()
+    end imgui.TextQuestion("Uzspied R un animacija tev kruta bus")
 
     imgui.EndChild()
 
     imgui.End()
   end
 end
-
-
