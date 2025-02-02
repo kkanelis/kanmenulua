@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.4 AutoRp Pievienots / 02.02.2025")
+script_version("0.6.4.1 AutoRp Pievienots, Checkbox / 02.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -90,6 +90,8 @@ local cfg = inicfg.load({
     rvk = false,
     sbv = false,
     aex = false,
+    garp = false,
+    carp = false,
 
   }
 }, 'kan.ini')
@@ -102,6 +104,8 @@ local cbunnyhop = imgui.ImBool(cfg.config.abh)
 local antirvanka = imgui.ImBool(cfg.config.rvk)
 local sbiv = imgui.ImBool(cfg.config.sbv)
 local antiexplosion = imgui.ImBool(cfg.config.aex)
+local gunarp = imgui.ImBool(cfg.config.garp)
+local cararp = imgui.ImBool(cfg.config.carp)
 local show_main_window = imgui.ImBool(false)
 
 
@@ -805,6 +809,17 @@ function imgui.OnDrawFrame()
       end)
     end
     imgui.TextQuestion("Noerpo tev bandanas pacelsanu/uzvliksanu")
+
+    if imgui.Checkbox("Ierocu Auto RP", gunarp) then
+      cfg.config.garp = gunarp.v
+      save()
+    end imgui.TextQuestion("Bus tev autorp kad mainis ierocus")
+
+    if imgui.Checkbox("Automasinas Auto RP", cararp) then
+        cfg.config.carp = cararp.v
+        save()
+    end imgui.TextQuestion("Noerpos ja ietrieksies kaut kur siena automatiski")
+
     imgui.Separator()
 
 
