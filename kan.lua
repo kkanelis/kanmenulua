@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.3 gangchecker / 02.02.2025")
+script_version("0.6.4 AutoRp Pievienots / 02.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -161,18 +161,43 @@ end
 
 -------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
--- ANTI BUNNYHOP --
-
-
+local lastweapon = 0
+local currentWeapon = 0
 
 function event.onSendPlayerSync(data)
-  if cbunnyhop then
- 	  if bit.band(data.keysData, 0x28) == 0x28 then
- 		  data.keysData = bit.bxor(data.keysData, 0x20)
- 	  end
-  end
+
+
+--- ANTI BUNNYHOP FAIL ---
+
+    if cbunnyhop then
+        if bit.band(data.keysData, 0x28) == 0x28 then
+            data.keysData = bit.bxor(data.keysData, 0x20)
+        end
+    end
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+--- Auto rp weapons ---
+
+
+    currentWeapon = getCurrentCharWeapon(playerPed)
+
+    if gunarp.v then
+        if(lastweapon ~= currentWeapon) then
+            if(currentWeapon == 0) then
+                sampSendChat("/me nolika nost ieroci")
+            elseif(currentWeapon == 23) then
+                sampSendChat(string.format("/me ar veiklu roku kustibu nolika '%s' un ta vieta iznema Tazer ieroci", weapons.names[lastweapon]))    
+            elseif(lastweapon == 0) then
+                sampSendChat(string.format("/me panema %s", weapons.names[currentWeapon]))
+            else	
+                sampSendChat(string.format("/me ar veiklu roku kustibu nolika '%s' un ta vieta iznema '%s'", weapons.names[lastweapon], weapons.names[currentWeapon]))
+            end
+            lastweapon = currentWeapon
+        end	
+    end
 end
 
 
@@ -181,7 +206,30 @@ end
 
 
 
--- GANG CHECKER --
+-- Auto RP vehicle damage --
+
+function event.onSendVehicleDamaged(vehicleId)
+	local rslt, ger = sampGetCarHandleBySampVehicleId(vehicleId)
+
+    if cararp.v then
+        if rslt then
+            curhp = getCarHealth(ger)
+            last = lasthp - 60
+            if(curhp < last) then
+                sampSendChat("/do vaditajs un transportlidzeklis negadijuma cietis nedaudz, var turpinat celu.")
+            end
+            lasthp = curhp
+        end	
+    end
+end	
+		
+function event.onSendEnterVehicle(vehicleId)
+	res, nig = sampGetCarHandleBySampVehicleId(vehicleId)
+	if res then
+		lasthp = getCarHealth(nig)
+	end	
+end			
+	
 
 
 
