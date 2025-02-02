@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.4.1 AutoRp Pievienots, Checkbox / 02.02.2025")
+script_version("0.6.5 Minor Fixes / 02.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -35,7 +35,7 @@ function autoupdate(json_url, prefix, url)
               lua_thread.create(function(prefix)
                 local dlstatus = require('moonloader').download_status
                 local color = -1
-                sampAddChatMessage((prefix..'Atjauninajums konstatets. Megina atjauninat '..thisScript().version..' uz '..updateversion), color)
+                sampAddChatMessage((prefix..'tiek atjauninats '..thisScript().version..' uz '..updateversion), color)
                 wait(250)
                 downloadUrlToFile(updatelink, thisScript().path,
                   function(id3, status1, p13, p23)
@@ -49,7 +49,7 @@ function autoupdate(json_url, prefix, url)
                     end
                     if status1 == dlstatus.STATUSEX_ENDDOWNLOAD then
                       if goupdatestatus == nil then
-                        sampAddChatMessage((prefix..'Atjauninasana bija neveiksmiga. Tiek izmantota pedeja versija..'), color)
+                        sampAddChatMessage((prefix..'Atjauninasana failed. Tiek izmantota pedeja versija..'), color)
                         update = false
                       end
                     end
@@ -773,10 +773,6 @@ function imgui.OnDrawFrame()
       save()
     end imgui.TextQuestion("Uzspied R un animacija tev kruta bus")
 
-    if imgui.Button("Clear Chat", imgui.ImVec2(194 * 0.6, 150 * 0.15)) then
-      ClearChat()
-    end 
-
     imgui.EndChild()
 
 
@@ -865,6 +861,14 @@ function imgui.OnDrawFrame()
       imgui.Text("/sd - isak sakot /setdrugs")
       imgui.Text("/flood - floodos /capture")
     end
+
+    imgui.Separator()
+
+    imgui.Text("Misc")
+
+    if imgui.Button("Clear Chat", imgui.ImVec2(194 * 0.4, 150 * 0.15)) then
+        ClearChat()
+    end 
 
     imgui.EndChild()
 
