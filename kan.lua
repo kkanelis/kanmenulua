@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.2 drugs / 02.02.2025")
+script_version("0.6.3 gangchecker / 02.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -192,6 +192,10 @@ end
 -- Gang Checker --
 
 function event.onPlayerJoin(playerId)
+  updateGangCounts()
+end
+
+function event.onPlayerQuit(playerId)
   updateGangCounts()
 end
 
