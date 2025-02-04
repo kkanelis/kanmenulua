@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.6 Mafia Checker / 03.02.2025")
+script_version("0.6.7 Minor Fixes / 04.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -129,7 +129,6 @@ function main()
   sampRegisterChatCommand("sm", function() sampSendChat("/setmaterials") end)
   sampRegisterChatCommand("sd", function() sampSendChat("/setdrugs") end)
   sampRegisterChatCommand("flood", function() toggleFlooder() end)
-  sampRegisterChatCommand('color', handleColorCommand)
 
   local url = 'https://pastebin.com/raw/51q0xeRt'
   local request = require('requests').get(url)
@@ -181,7 +180,7 @@ function event.onSendPlayerSync(data)
 
 --- ANTI BUNNYHOP FAIL ---
 
-    if cbunnyhop then
+    if cbunnyhop.v then
         if bit.band(data.keysData, 0x28) == 0x28 then
             data.keysData = bit.bxor(data.keysData, 0x20)
         end
@@ -262,7 +261,7 @@ end
 
 function updateGangCounts()
   onlsg, ongsg, onbg, onvg, onrg, onvla = 0, 0, 0, 0, 0, 0
-  onim, onmm, oncm, onlm = 0, 0, 0, 0
+  onim, onmm, oncm, onlm, onrm, ondm, onsy = 0, 0, 0, 0, 0, 0
   
   reslt, mansid = sampGetPlayerIdByCharHandle(playerPed)
   if reslt then
@@ -279,27 +278,46 @@ function updateGangCounts()
       if playerColor == 0xFFFE00B4 then onim = onim + 1 end
       if playerColor == 0xFFAEF72F then onmm = onmm + 1 end
       if playerColor == 0xFF003300 then oncm = oncm + 1 end
-      if playerColor == 0xFFAFAFAF then onlm = onlm + 1 end
+      if playerColor == 0xAAAFAFAF then onlm = onlm + 1 end
+      if playerColor == 0xFFDC143C then ondm = ondm + 1 end
+      if playerColor == 0xFFFF0000 then onsy = onsy + 1 end
   end
 
-  for i = 0, 140 do
-      if sampIsPlayerConnected(i) then
-          local playerColor = sampGetPlayerColor(i)
-          if playerColor == 4294860800 then onlsg = onlsg + 1 end
-          if playerColor == 0xC800D900 then ongsg = ongsg + 1 end
-          if playerColor == 0xC8D900D3 then onbg = onbg + 1 end
-          if playerColor == 0xC8FFC801 then onvg = onvg + 1 end
-          if playerColor == 0xAA83BFBF then onrg = onrg + 1 end
-          if playerColor == 0xC801FCFF then onvla = onvla + 1 end
-          
-          ---------------------------------------------------------
-          --- mafia checker ---
-          if playerColor == 0xFFFE00B4 then onim = onim + 1 end
-          if playerColor == 0xFFAEF72F then onmm = onmm + 1 end
-          if playerColor == 0xFF003300 then oncm = oncm + 1 end
-          if playerColor == 0xFFAFAFAF then onlm = onlm + 1 end
-      end
-  end
+  lua_thread.create(function()
+    while true do
+        onlsg, ongsg, onbg, onvg, onrg, onvla = 0, 0, 0, 0, 0, 0
+        onim, onmm, oncm, onlm, ondm, onrm, onsy = 0, 0, 0, 0, 0, 0, 0
+
+        local countedPlayers = {} 
+
+        for i = 0, 140 do
+            if sampIsPlayerConnected(i) and not countedPlayers[i] then
+                local playerColor = sampGetPlayerColor(i)
+
+            -- Gang Colors
+            if playerColor == 4294860800 then onlsg = onlsg + 1 end
+            if playerColor == 0xC800D900 then ongsg = ongsg + 1 end
+            if playerColor == 0xC8D900D3 then onbg = onbg + 1 end
+            if playerColor == 0xC8FFC801 then onvg = onvg + 1 end
+            if playerColor == 0xAA83BFBF then onrg = onrg + 1 end
+            if playerColor == 0xC801FCFF then onvla = onvla + 1 end
+
+            -- Mafia Colors
+            if playerColor == 0xFFFE00B4 then onim = onim + 1 end
+            if playerColor == 0xFFAEF72F then onmm = onmm + 1 end
+            if playerColor == 0xFF003300 then oncm = oncm + 1 end
+            if playerColor == 0xAAAFAFAF then onlm = onlm + 1 end -- LM
+            if playerColor == 0xFFDC143C then ondm = ondm + 1 end
+            if playerColor == 0xFFFF0000 then onsy = onsy + 1 end
+
+                countedPlayers[i] = true
+            end
+        end
+
+        wait(1000)
+    end
+  end)
+
 end
 
 
@@ -391,18 +409,22 @@ function mafiaVisuals()
   sampTextdrawCreate(202, "MM:", 5.0, 330)
   sampTextdrawCreate(203, "CM:", 5.0, 320)
   sampTextdrawCreate(204, "LM:", 5.0, 310)
+  sampTextdrawCreate(205, "DM:", 5.0, 300)
+  sampTextdrawCreate(206, "SYY:", 5.0, 290)
 
   sampTextdrawCreate(1201, "0", 20.0, 340)
   sampTextdrawCreate(1202, "0", 20.0, 330)
   sampTextdrawCreate(1203, "0", 20.0, 320)
   sampTextdrawCreate(1204, "0", 20.0, 310)
+  sampTextdrawCreate(1205, "0", 20.0, 300)
+  sampTextdrawCreate(1206, "0", 20.0, 290)
 
-  for i = 201, 204 do
+  for i = 201, 206 do
     sampTextdrawSetStyle(i, 1)
     sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
   end
 
-  for i = 1201, 1204 do
+  for i = 1201, 1206 do
     sampTextdrawSetStyle(i, 1)
     sampTextdrawSetOutlineColor(i, 1, 0xFF000000) -- Black outline
   end
@@ -411,11 +433,15 @@ function mafiaVisuals()
   sampTextdrawSetLetterSizeAndColor(202, 0.2, 0.9, 0xFFaef72f) -- MM
   sampTextdrawSetLetterSizeAndColor(203, 0.2, 0.9, 0xFF003300) -- CM
   sampTextdrawSetLetterSizeAndColor(204, 0.2, 0.9, 0xFFAFAFAF) -- LM
+  sampTextdrawSetLetterSizeAndColor(205, 0.2, 0.9, 0xFFDC143C) -- DM
+  sampTextdrawSetLetterSizeAndColor(206, 0.2, 0.9, 0xFFFF0000) -- SYY
 
   sampTextdrawSetLetterSizeAndColor(1201, 0.2, 0.9, 0xFFfe00b4) -- IM
   sampTextdrawSetLetterSizeAndColor(1202, 0.2, 0.9, 0xFFaef72f) -- MM  
   sampTextdrawSetLetterSizeAndColor(1203, 0.2, 0.9, 0xFF003300) -- CM
   sampTextdrawSetLetterSizeAndColor(1204, 0.2, 0.9, 0xFFAFAFAF) -- LM
+  sampTextdrawSetLetterSizeAndColor(1205, 0.2, 0.9, 0xFFDC143C) -- DM
+  sampTextdrawSetLetterSizeAndColor(1206, 0.2, 0.9, 0xFFFF0000) -- SYY
 
   if checkmafia.v then
 
@@ -423,11 +449,15 @@ function mafiaVisuals()
     sampTextdrawSetString(202, "MM:")
     sampTextdrawSetString(203, "CM:")
     sampTextdrawSetString(204, "LM:")
+    sampTextdrawSetString(205, "DM:")
+    sampTextdrawSetString(206, "SYY:")
 
     sampTextdrawSetString(1201, onim)
     sampTextdrawSetString(1202, onmm)
     sampTextdrawSetString(1203, oncm)
     sampTextdrawSetString(1204, onlm)
+    sampTextdrawSetString(1205, ondm)
+    sampTextdrawSetString(1206, onsy)
 
   else 
 
@@ -435,10 +465,15 @@ function mafiaVisuals()
     sampTextdrawDelete(202)
     sampTextdrawDelete(203)
     sampTextdrawDelete(204)
+    sampTextdrawDelete(205)
+    sampTextdrawDelete(206)
+
     sampTextdrawDelete(1201)
     sampTextdrawDelete(1202)
     sampTextdrawDelete(1203)
     sampTextdrawDelete(1204)
+    sampTextdrawDelete(1205)
+    sampTextdrawDelete(1206)
 
   end
 
@@ -462,8 +497,8 @@ function drugs()
       if isKeyJustPressed(VK_X) then
         lua_thread.create(function()
           sampSendChat("/usedrugs 20")
-          wait(350)
-          clearCharTasksImmediately(PLAYER_PED)
+          wait(400)
+          taskPlayAnim(PLAYER_PED, "HIT_WALK", "PED", 600.0, false, true, true, false, 1)
       end)
     end
   end
@@ -504,7 +539,7 @@ function SellGunCommandMafia(weaponId)
   return function()
     local result, playerId = sampGetPlayerIdByCharHandle(playerPed)
     if result then
-      sampSendChat(string.format("/sellgun %d %d 250 1", playerId, weaponId))
+      sampSendChat(string.format("/sellgun %d %d 500 1", playerId, weaponId))
     end
   end
 end
@@ -516,7 +551,7 @@ end
 -- ANTI CAR EXPLOSION --
 
 function acarExplosion()
-    if antiexplosion and isCharInAnyCar(PLAYER_PED) then
+    if antiexplosion.v and isCharInAnyCar(PLAYER_PED) then
       local veh = storeCarCharIsInNoSave(PLAYER_PED)
       if getCarHealth(veh) < hp then
           setCarHealth(veh, hp)
@@ -525,7 +560,7 @@ function acarExplosion()
 end
 
 function event.onSendVehicleSync(data)
-  if antiexplosion == true then 
+  if antiexplosion == true then
       data.vehicleHealth = hp
       return data
   end
@@ -630,11 +665,13 @@ end
 -- SBIVS --
 
 function sbivs()
-  if not sampIsCursorActive() then
-    if wasKeyPressed(VK_R) then
-      if isCharOnFoot(PLAYER_PED) then 
-        clearCharTasksImmediately(PLAYER_PED)
-      end 
+  if sbiv.v then
+    if not sampIsCursorActive() then
+      if wasKeyPressed(VK_R) then
+        if isCharOnFoot(PLAYER_PED) then 
+          clearCharTasksImmediately(PLAYER_PED)
+        end 
+      end
     end
   end
 end
@@ -937,24 +974,19 @@ function imgui.OnDrawFrame()
     imgui.EndChild()
 
 
-    -----------------------------------------------------------------------------------------------------------------
-
 
     -----------------------------------------------------------------------------------------------------------------
-  
-
-
-
-    -----------------------------------------------------------------------------------------------------------------
-    imgui.SameLine()
+    
+    
+    
 
     imgui.BeginChild("koks3", imgui.ImVec2(194, 300), true)
 
     if imgui.CollapsingHeader('Commands') then
-        imgui.Text("/dg - deagles 500 lodes")
-        imgui.Text("/m4 - m4 500 lodes")
-        imgui.Text("/dgm - deagles 250 lodes")
-        imgui.Text("/m4m - m4 250 lodes")
+        imgui.Text("/dg - deagles 999 lodes")
+        imgui.Text("/m4 - m4 999 lodes")
+        imgui.Text("/dgm - deagles 500 lodes")
+        imgui.Text("/m4m - m4 500 lodes")
         imgui.Text("/sm - isak sakot /setmaterials")
         imgui.Text("/sd - isak sakot /setdrugs")
         imgui.Text("/flood - floodos /capture")
