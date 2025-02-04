@@ -1,5 +1,5 @@
 script_name("kanmenu")
-script_version("0.6.7 Minor Fixes / 04.02.2025")
+script_version("0.6.7.1 Minor Fixes / 04.02.2025")
 
 require "lib.moonloader"
 local event = require "lib.samp.events"
@@ -977,7 +977,7 @@ function imgui.OnDrawFrame()
 
     -----------------------------------------------------------------------------------------------------------------
     
-    
+    imgui.SameLine()
     
 
     imgui.BeginChild("koks3", imgui.ImVec2(194, 300), true)
